@@ -26,8 +26,12 @@ function validate(text: string): void {
   if (text.trim().length === 0) {
     throw new Error('entry is blank');
   }
-  if (text.length < 1 || text.length > 200) {
-    throw new Error(`entry is ${text.length} characters, gate needs 1-200`);
+  // Count characters as code points, the way the sealed scorer counts
+  // them: a character outside the BMP is one character, not two UTF-16
+  // code units. (Our line is all BMP, so both counts agree at 117.)
+  const chars = [...text].length;
+  if (chars < 1 || chars > 200) {
+    throw new Error(`entry is ${chars} characters, gate needs 1-200`);
   }
   if (text.includes('\n') || text.includes('\r')) {
     throw new Error('entry must be a single line');
